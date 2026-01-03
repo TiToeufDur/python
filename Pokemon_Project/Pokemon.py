@@ -103,7 +103,6 @@ class Pokemon:
 
         print(f"{damage} damage and {damage_soaked} damage soaked by shield.")
         print(f"Hp: {target.hp} Shield: {target.shield}\n")
-
     def pokemon_info(self,i):
         return f"\n{i} - {self.name} (Type: {self.type}, HP: {self.hp}, Shield: {self.shield}) \n    ATTACKS: " + ", ".join([f"\n    {atk.name} (Type: {atk.type}, Power: {atk.power})" for atk in self.attacks])
 class Attack:
@@ -152,26 +151,25 @@ def create_squirtle():
 pokemon_pools = [create_pikachu, create_bulbasaur, create_charmander, create_squirtle]
 player = random.choice(pokemon_pools)()
 bot = random.choice(pokemon_pools)()
-
-
 player.rect.topleft = (100, 300)
 bot.rect.topleft = (500, 100)
-selected_attack = 0
-player_turn = True
-message = ""
-running = True
-while running:
+
+def Screen():
     screen.fill((255,255,255))
     screen.blit(player.image, (100, 300))
     screen.blit(bot.image, (500, 100))  
+selected_attack = 0
+player_turn = True
+message = ""
+def game_loop():
+    global running, selected_attack, player_turn, message
+    Screen()
     if bot.hp <= 0:
         message = "You win!"
-
     if player.hp <= 0:
         message = "You lost!"
-        
     if player.hp <= 0 or bot.hp <= 0:
-        running = False
+        return
     for p in [player, bot]:
         # HP bar
         pygame.draw.rect(screen, (255,0,0), (p.rect.x, p.rect.y - 20, 100, 10))
@@ -185,7 +183,7 @@ while running:
     if player_turn:
         for i, atk in enumerate(player.attacks):
             color = (255,0,0) if i == selected_attack else (0,0,0)
-            text = font.render(f"{i+1}. {atk.name} (Power:{atk.power})", True, color)
+            text = font.render(f"{i+1}. {atk.name} (Power:{atk.power}) <", True, color) if i == selected_attack else font.render(f"{i+1}. {atk.name} (Power:{atk.power})", True, color)
             screen.blit(text, (50,50 + i*30))
 
 
@@ -213,4 +211,5 @@ while running:
 
     clock.tick(30)
 
+    
 pygame.quit()
